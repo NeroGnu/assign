@@ -1,6 +1,7 @@
 classdef Attacker
     properties
         centre;%中心坐标
+        speed;
         velocity;%矢量速度
         t_velocity;%目标矢量速度
         direction;%朝向
@@ -18,8 +19,9 @@ classdef Attacker
                     obj.centre=centre; 
                     obj.color=color; 
                     obj.direction=direction;
-                    obj.velocity(1)=cos(direction)*speed;
-                    obj.velocity(2)=sin(direction)*speed;
+                    obj.speed=speed;
+                    obj.velocity(1)=cosd(direction)*speed;
+                    obj.velocity(2)=sind(direction)*speed;
                     obj.facility=facility;
                     obj.shape_x=shape_x; 
                     obj.shape_y=shape_y;
@@ -27,8 +29,9 @@ classdef Attacker
                     obj.centre=centre; 
                     obj.color=color; 
                     obj.direction=direction;
-                    obj.velocity(1)=cos(direction)*speed;
-                    obj.velocity(2)=sin(direction)*speed;
+                    obj.speed=speed;
+                    obj.velocity(1)=cosd(direction)*speed;
+                    obj.velocity(2)=sind(direction)*speed;
                     obj.facility=facility;
                     obj.shape_x=[-15 0 15 0]; 
                     obj.shape_y=[-10 30 -10 0];
@@ -36,36 +39,40 @@ classdef Attacker
                     obj.centre=centre; 
                     obj.color=color; 
                     obj.direction=direction;
-                    obj.velocity(1)=cos(direction)*speed;
-                    obj.velocity(2)=sin(direction)*speed;
-                    obj.facility=pi*(10/180);
+                    obj.speed=speed;
+                    obj.velocity(1)=cosd(direction)*speed;
+                    obj.velocity(2)=sind(direction)*speed;
+                    obj.facility=10;
                     obj.shape_x=[-15 0 15 0]; 
                     obj.shape_y=[-10 30 -10 0];
                 case 3
                     obj.centre=centre; 
                     obj.color=color; 
                     obj.direction=direction;
-                    obj.velocity(1)=cos(direction)*10;
-                    obj.velocity(2)=sin(direction)*10;
-                    obj.facility=pi*(10/180);
+                    obj.speed=10;
+                    obj.velocity(1)=cosd(direction)*obj.speed;
+                    obj.velocity(2)=sind(direction)*obj.speed;
+                    obj.facility=10;
                     obj.shape_x=[-15 0 15 0]; 
                     obj.shape_y=[-10 30 -10 0];
                 case 2
                     obj.centre=centre; 
                     obj.color=color; 
-                    obj.direction=pi/2;
-                    obj.velocity(1)=cos(obj.direction)*10;
-                    obj.velocity(2)=sin(obj.direction)*10;
-                    obj.facility=pi*(10/180);
+                    obj.direction=90;
+                    obj.speed=10;
+                    obj.velocity(1)=cosd(obj.direction)*obj.speed;
+                    obj.velocity(2)=sind(obj.direction)*obj.speed;
+                    obj.facility=10;
                     obj.shape_x=[-15 0 15 0]; 
                     obj.shape_y=[-10 30 -10 0];
                 case 1
                     obj.centre=centre; 
                     obj.color=rand(1,3); 
-                    obj.direction=pi/2;
-                    obj.velocity(1)=cos(obj.direction)*10;
-                    obj.velocity(2)=sin(obj.direction)*10;
-                    obj.facility=pi*(10/180);
+                    obj.direction=90;
+                    obj.speed=10;
+                    obj.velocity(1)=cosd(obj.direction)*obj.speed;
+                    obj.velocity(2)=sind(obj.direction)*obj.speed;
+                    obj.facility=10;
                     obj.shape_x=[-15 0 15 0]; 
                     obj.shape_y=[-10 30 -10 0];
                 otherwise
@@ -80,9 +87,35 @@ classdef Attacker
             obj.ghandle=value;
         end
         function obj=Run(obj, t)
+            %转向
+           if  abs(obj.t_direction-obj.direction)>obj.facility*t && abs(obj.t_direction-obj.direction)<180
+               [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.facility*t);
+               obj.direction=obj.direction-obj.facility*t;
+           elseif abs(obj.t_direction-obj.direction)>obj.facility*t && abs(obj.t_direction-obj.direction)>180
+               [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, 0-obj.facility*t);
+               obj.direction=obj.direction+obj.facility*t;
+           else
+               [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.t_direction-obj.direction);
+               obj.direction=obj.t_direction;
+           end
+           obj.velocity(1)=cosd(obj.direction)*obj.speed;
+           obj.velocity(2)=sind(obj.direction)*obj.speed;
+           
            obj.centre(1)=obj.centre(1)+obj.velocity(1)*t;
            obj.centre(2)=obj.centre(2)+obj.velocity(2)*t;
            obj.ghandle=patch(obj.centre(1)+obj.shape_x, obj.centre(2)+obj.shape_y, obj.color);
+        end
+        function [rx, ry] = RotatePatch(x, y, angle)
+            rx=x*cosd(angle)-y*sind(angle);
+            ry=x*sind(angle)+y*cosd(angle);
+        end
+        function obj=set.t_direction(obj, value)
+            while value>360
+                value=value-360;
+            end
+            while value<0
+                value=value+360;
+            end
         end
     end
 end
