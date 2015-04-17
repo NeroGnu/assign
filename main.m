@@ -24,7 +24,7 @@ Tcoordinatelist(:, 2)=randperm(numTarget)/numTarget;
 
 for i=1:numAttacker
     car(i)=Attacker(round(Acoordinatelist(i, :)*200), Acolorlist(i, :), 90, 10, 10, [-5 0 5 0], [-3.3 10 -3.3 0]);
-    car(i).t_direction=180;
+    car(i).t_direction=280;
 end
 for i=1:numTarget
     target(i)=Object(round(Tcoordinatelist(i, :)*500), 10, Tcolorlist(i, :));
