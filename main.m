@@ -27,7 +27,7 @@ for i=1:numAttacker
     car(i).t_direction=280;
 end
 for i=1:numTarget
-    target(i)=Object(round(Tcoordinatelist(i, :)*500), 10, Tcolorlist(i, :));
+    target(i)=MyObject(round(Tcoordinatelist(i, :)*500), 10, Tcolorlist(i, :));
 end
 
 for j=1:300
