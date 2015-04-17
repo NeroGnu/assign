@@ -33,8 +33,8 @@ classdef Attacker
                     obj.velocity(1)=cosd(direction)*speed;
                     obj.velocity(2)=sind(direction)*speed;
                     obj.facility=facility;
-                    obj.shape_x=[-15 0 15 0]; 
-                    obj.shape_y=[-10 30 -10 0];
+                    obj.shape_x=[-1.5 0 1.5 0]; 
+                    obj.shape_y=[-1.0 3.0 -1.0 0];
                 case 4
                     obj.centre=centre; 
                     obj.color=color; 
@@ -43,8 +43,8 @@ classdef Attacker
                     obj.velocity(1)=cosd(direction)*speed;
                     obj.velocity(2)=sind(direction)*speed;
                     obj.facility=10;
-                    obj.shape_x=[-15 0 15 0]; 
-                    obj.shape_y=[-10 30 -10 0];
+                    obj.shape_x=[-1.5 0 1.5 0]; 
+                    obj.shape_y=[-1.0 3.0 -1.0 0];
                 case 3
                     obj.centre=centre; 
                     obj.color=color; 
@@ -53,8 +53,8 @@ classdef Attacker
                     obj.velocity(1)=cosd(direction)*obj.speed;
                     obj.velocity(2)=sind(direction)*obj.speed;
                     obj.facility=10;
-                    obj.shape_x=[-15 0 15 0]; 
-                    obj.shape_y=[-10 30 -10 0];
+                    obj.shape_x=[-1.5 0 1.5 0]; 
+                    obj.shape_y=[-1.0 3.0 -1.0 0];
                 case 2
                     obj.centre=centre; 
                     obj.color=color; 
@@ -63,8 +63,8 @@ classdef Attacker
                     obj.velocity(1)=cosd(obj.direction)*obj.speed;
                     obj.velocity(2)=sind(obj.direction)*obj.speed;
                     obj.facility=10;
-                    obj.shape_x=[-15 0 15 0]; 
-                    obj.shape_y=[-10 30 -10 0];
+                    obj.shape_x=[-1.5 0 1.5 0]; 
+                    obj.shape_y=[-1.0 3.0 -1.0 0];
                 case 1
                     obj.centre=centre; 
                     obj.color=rand(1,3); 
@@ -73,8 +73,8 @@ classdef Attacker
                     obj.velocity(1)=cosd(obj.direction)*obj.speed;
                     obj.velocity(2)=sind(obj.direction)*obj.speed;
                     obj.facility=10;
-                    obj.shape_x=[-15 0 15 0]; 
-                    obj.shape_y=[-10 30 -10 0];
+                    obj.shape_x=[-1.5 0 1.5 0]; 
+                    obj.shape_y=[-1.0 3.0 -1.0 0];
                 otherwise
                     disp('Parameter error!'); return;
             end
@@ -88,21 +88,30 @@ classdef Attacker
         end
         function obj=Run(obj, t)
             %转向
-           if  abs(obj.t_direction-obj.direction)>obj.facility*t && abs(obj.t_direction-obj.direction)<180
-               [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.facility*t);
-               obj.direction=obj.direction-obj.facility*t;
-           elseif abs(obj.t_direction-obj.direction)>obj.facility*t && abs(obj.t_direction-obj.direction)>180
-               [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, 0-obj.facility*t);
-               obj.direction=obj.direction+obj.facility*t;
+           if obj.t_direction-obj.direction>0
+               if obj.t_direction-obj.direction>obj.facility*t
+                   [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.facility*t);
+                   obj.direction=obj.direction+obj.facility*t;
+               else
+                   [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.t_direction-obj.direction);
+                   obj.direction=obj.t_direction;
+               end
            else
-               [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.t_direction-obj.direction);
-               obj.direction=obj.t_direction;
+               if obj.direction-obj.t_direction>obj.facility*t
+                   [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, 0-obj.facility*t);
+                   obj.direction=obj.direction-obj.facility*t;
+               else
+                   [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.direction-obj.t_direction);
+                   obj.direction=obj.t_direction;
+               end
            end
+           %更新速度
            obj.velocity(1)=cosd(obj.direction)*obj.speed;
            obj.velocity(2)=sind(obj.direction)*obj.speed;
-           
+           %更新位置
            obj.centre(1)=obj.centre(1)+obj.velocity(1)*t;
            obj.centre(2)=obj.centre(2)+obj.velocity(2)*t;
+           %绘图
            obj.ghandle=patch(obj.centre(1)+obj.shape_x, obj.centre(2)+obj.shape_y, obj.color);
         end
         function [rx, ry] = RotatePatch(x, y, angle)
@@ -116,6 +125,16 @@ classdef Attacker
             while value<0
                 value=value+360;
             end
+            obj.t_direction=value;
+        end
+        function obj=set.direction(obj, value)
+            while value>360
+                value=value-360;
+            end
+            while value<0
+                value=value+360;
+            end
+            obj.direction=value;
         end
     end
 end
