@@ -6,27 +6,48 @@ classdef Control
         area;
         vision_angle;
         vision_disdance;
+        patrol_interval;
         assign_result;
         sum_result;
+        patrol_point;
+        patrol_path;
+        A_finish;
+        O_finish;
     end
     methods
-        function obj=Control(area, angle, disdance)
+        function obj=Control(area, Attacker, Object, angle, disdance)
             switch nargin
-                case 3
+                case 5
                     obj.area=area;
                     obj.vision_angle=angle;
                     obj.vision_disdance=disdance;
-                case 2
+                case 4
                     obj.area=area;
                     obj.vision_angle=angle;
-                    obj.vision_disdance=100;
-                case 1
+                    obj.vision_disdance=300;
+                case 3
                     obj.area=area;
-                    obj.vision_angle=30;
-                    obj.vision_disdance=100;
+                    obj.vision_angle=60;
+                    obj.vision_disdance=300;
                 otherwise
                     disp('Parameter error!'); return;
             end
+           obj.patrol_interval(1)=cosd(90-obj.vision_angle/2)*obj.vision_disdance;
+           obj.patrol_interval(2)=obj.vision_disdance;
+           obj.A_finish=zeros(1, length(Attacker));
+           obj.O_finish=zeros(1, length(Object));
+%            patrol_point(1)=[0 obj.area(3)+obj.vision_disdance];
+%            patrol_point(2)=[0 obj.area(4)-obj.vision_disdance];
+%            n=fix(obj.area(2)/obj.patrol_interval(1));
+%            for i=1:n
+%                if 1==mod(i, 2)
+%                    patrol_point(2*i+1)=[i*obj.patrol_interval(1), obj.area(4)-obj.vision_disdance];
+%                    patrol_point(2*i+2)=[i*obj.patrol_interval(1), obj.area(3)+obj.vision_disdance];
+%                else
+%                    patrol_point(2*i+1)=[i*obj.patrol_interval(1), obj.area(3)+obj.vision_disdance];
+%                    patrol_point(2*i+2)=[i*obj.patrol_interval(1), obj.area(4)-obj.vision_disdance];
+%                end
+%            end
         end
         
         function obj=Scaning(obj, Attacker, Object)
@@ -36,10 +57,18 @@ classdef Control
             obj.index_object=[];
             obj.efficiency_martrix=[];
             for i=1:numAttacker
-                obj.index_attacker=i;
-                for j=1:numObject
-                    if 1==obj.See(Attacker(i), Object(j))
-                        obj.index_object=j;
+                if 1~=Attacker(i).finish
+                    obj.index_attacker=i;
+                    for j=1:numObject
+                        if 1~=obj. O_finish(j)
+                            if 1==obj.See(Attacker(i), Object(j))
+                                obj.index_object=j;
+                                if sqrt((Object(j).centre(2)-Attacker(i).centre(2))^2 + (Object(j).centre(1)-Attacker(i).centre(1))^2)<Object(j).radius
+                                   obj. A_finish(i)=1;
+                                   obj. O_finish(j)=1;
+                                end
+                            end
+                        end
                     end
                 end
             end
@@ -104,7 +133,11 @@ classdef Control
         end
         
         function obj = BG_Assign(obj)
-
+            if isempty(obj.efficiency_martrix)
+                obj.assign_result=[];
+                obj.sum_result=[];
+                return;
+            end
             ematrix=obj.efficiency_martrix;
             ematrix_b = ematrix;
             [numRows, numCols] = size(ematrix);
@@ -141,5 +174,28 @@ classdef Control
             ematrix_b = obj.assign_result .* ematrix_b;
             obj.sum_result = sum(sum(ematrix_b));
         end
+        
+%         function angle=Patrol(obj, Attacker)
+%             temp=1;
+%             for i=1:length(obj.patrol_point(:,1))
+%                 if sqrt((patrol_point(i,2)-Attacker.centre(2))^2 + (patrol_point(i,1)-Attacker.centre(1))^2)>20
+%                    
+%                 end
+%             end
+%             n=fix(Attacker.centre(1)+1/obj.patrol_interval(1));
+%             if Attacker.direction>0
+%                 y=obj.area(4)-obj.patrol_interval(2);
+%             else
+%                 y=obj.area(3)+obj.patrol_interval(2);
+%             end
+%             if abs(Attacker.direction)<90
+%                 x=(n+1)*obj.patrol_interval(1);
+%             else
+%                 x=n*obj.patrol_interval(1);
+%             end
+%             
+%                 
+%             angle=atand((y-Attacker.centre(2))/(x-Attacker.centre(1)));
+%         end
     end
 end

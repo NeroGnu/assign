@@ -24,25 +24,49 @@ Tcoordinatelist(:, 1)=randperm(numTarget)/numTarget;
 Tcoordinatelist(:, 2)=randperm(numTarget)/numTarget;
 
 for i=1:numAttacker
-    car(i)=Attacker(round(Acoordinatelist(i, :)*200), Acolorlist(i, :), 90, 10, 10, [-5 0 5 0], [-3.3 10 -3.3 0]);
-%     car(i).t_direction=280;
+    car(i)=Attacker([0 0], Acolorlist(i, :), 5+10*(i-1));
+%     car(i).t_direction=5+10*(i-1);
 end
 for i=1:numTarget
     target(i)=MyObject(round(Tcoordinatelist(i, :)*500), 10, Tcolorlist(i, :));
 end
 
-C=Control(area);
+C=Control(area, car, target);
 
-for j=1:300
+for j=1:1200
     for i=1:numAttacker
+        %扫描
         C=C.Scaning(car, target);
+        for ii=1:length(car)
+            car(ii).finish=C.A_finish(ii);
+        end
+        for ii=1:length(target)
+            target(ii).finish=C.O_finish(ii);
+        end
+        %分配
         C=C.BG_Assign;
-        ia=find(C.assign_result(C.index_attacker(i),:)==1);
-        ib=C.index_object(ia);
-        if ~isempty(ib)
-            car(i).t_direction=atand((target(ib).centre(2)-car(i).centre(2))/(target(ib).centre(1)-car(i).centre(1)));
-        end 
-        car(i)=car(i).Run(0.1);
+        %排除已完成小车
+        if 1~=car(i).finish
+            if ~isempty(C.assign_result)
+                ia=find(C.assign_result(find(C.index_attacker==i),:)==1);
+                ib=C.index_object(ia);
+                if ~isempty(ib)
+                    if sqrt((target(ib).centre(2)-car(i).centre(2))^2 + (target(ib).centre(1)-car(i).centre(1))^2)<200
+                       car(i).t_direction=atand((target(ib).centre(2)-car(i).centre(2))/(target(ib).centre(1)-car(i).centre(1)));
+                    end
+%                 else
+%                     car(i).t_direction=C.PatrolPoint(car(i));
+%                     fprintf('car(%d).t_direction:%f', i, car(i).t_direction);
+%                     fprintf('\n');
+%                 end 
+%             else
+%                 car(i).t_direction=C.PatrolPoint(car(i));
+%                 fprintf('none car(%d).t_direction:%f', i, car(i).t_direction);
+%                 fprintf('\n');
+                end
+            end
+            car(i)=car(i).Run(0.1);
+        end
     end
     pause(0.1);
 end

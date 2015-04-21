@@ -4,6 +4,7 @@ classdef MyObject
         radius;
         color;
         significance;
+        finish;
         ghandle;
     end
     methods
@@ -32,6 +33,7 @@ classdef MyObject
                 otherwise
                     disp('Parameter error!'); return;
             end
+            obj.finish=0;
             obj.ghandle=rectangle('Position',[obj.centre(1)-obj.radius, obj.centre(2)-obj.radius, obj.radius, obj.radius],'Curvature',[1,1],  'FaceColor',obj.color);
         end
         function obj=set.ghandle(obj, value)
