@@ -24,11 +24,11 @@ classdef Control
                 case 4
                     obj.area=area;
                     obj.vision_angle=angle;
-                    obj.vision_disdance=300;
+                    obj.vision_disdance=200;
                 case 3
                     obj.area=area;
                     obj.vision_angle=60;
-                    obj.vision_disdance=300;
+                    obj.vision_disdance=200;
                 otherwise
                     disp('Parameter error!'); return;
             end
@@ -132,7 +132,7 @@ classdef Control
             obj.index_object=[obj.index_object, value];
         end
         
-        function obj = BG_Assign(obj)
+        function obj = BG_Assign(obj, time)
             if isempty(obj.efficiency_martrix)
                 obj.assign_result=[];
                 obj.sum_result=[];
@@ -170,9 +170,22 @@ classdef Control
                     ematrix(:, index_j) = 0;
                 end
             end
+            
+            for i=1:length(obj.assign_result(1,:))
+                Ut_index=find(obj.assign_result(:,i)==1);
+                Ut=obj.efficiency_martrix(Ut_index, i);
+                comparison=(max(Ut)-Ut)./Ut;
+                for j=1:length(comparison)
+                    
+                end
+            end
 
             ematrix_b = obj.assign_result .* ematrix_b;
             obj.sum_result = sum(sum(ematrix_b));
+        end
+        
+        function threshold=sigmoid(median, divider, x)
+            threshold=1/(exp((median-x)/divider) + 1);
         end
         
 %         function angle=Patrol(obj, Attacker)
