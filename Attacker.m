@@ -93,7 +93,7 @@ classdef Attacker
         function obj=Run(obj, t)
             if 1~=obj.finish
                 %转向
-               if obj.t_direction-obj.direction>0
+               if obj.t_direction-obj.direction>0 && obj.t_direction-obj.direction<180
                    if obj.t_direction-obj.direction>obj.facility*t
                        [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.facility*t);
                        obj.direction=obj.direction+obj.facility*t;  
@@ -101,12 +101,28 @@ classdef Attacker
                        [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.t_direction-obj.direction);
                        obj.direction=obj.t_direction;
                    end
-               else
+               elseif obj.direction-obj.t_direction>0 && obj.direction-obj.t_direction<180
                    if obj.direction-obj.t_direction>obj.facility*t
                        [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, 0-obj.facility*t);
                        obj.direction=obj.direction-obj.facility*t;
                    else
                        [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.direction-obj.t_direction);
+                       obj.direction=obj.t_direction;
+                   end
+               elseif obj.t_direction-obj.direction>0 && obj.t_direction-obj.direction>180
+                   if (obj.direction+360)-obj.t_direction>obj.facility*t
+                       [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, 0-obj.facility*t);
+                       obj.direction=obj.direction-obj.facility*t;
+                   else
+                       [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.t_direction-(obj.direction+360));
+                       obj.direction=obj.t_direction;
+                   end
+               elseif obj.direction-obj.t_direction>0 && obj.direction-obj.t_direction>180
+                   if (obj.t_direction+360)-obj.direction>obj.facility*t
+                       [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.facility*t);
+                       obj.direction=obj.direction+obj.facility*t;  
+                   else
+                       [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, (obj.t_direction+360)-obj.direction);
                        obj.direction=obj.t_direction;
                    end
                end
@@ -125,10 +141,10 @@ classdef Attacker
             ry=x*sind(angle)+y*cosd(angle);
         end
         function obj=set.t_direction(obj, value)
-            while value>360
+            while value>180
                 value=value-360;
             end
-            while value<0
+            while value<-180
                 value=value+360;
             end
             if value>=-180 && value<=180
@@ -140,10 +156,10 @@ classdef Attacker
             end
         end
         function obj=set.direction(obj, value)
-            while value>360
+            while value>180
                 value=value-360;
             end
-            while value<0
+            while value<-180
                 value=value+360;
             end
             if value>=-180 && value<=180

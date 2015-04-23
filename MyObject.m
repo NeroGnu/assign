@@ -8,28 +8,24 @@ classdef MyObject
         ghandle;
     end
     methods
-        function obj=MyObject(centre, radius, color, significance)
+        function obj=MyObject(centre, radius, significance)
+            C=jet(128);
             switch nargin
-                case 4
-                    obj.centre=centre;
-                    obj.radius=radius;
-                    obj.color=color;
-                    obj.significance=significance;
                 case 3
                     obj.centre=centre;
                     obj.radius=radius;
-                    obj.color=color;
-                    obj.significance=rand(1);
+                    obj.significance=significance;
+                    obj.color=C(ceil(obj.significance*128),:);
                 case 2
                     obj.centre=centre;
                     obj.radius=radius;
-                    obj.color=rand(1,3);
                     obj.significance=rand(1);
+                    obj.color=C(ceil(obj.significance*128),:);
                 case 1
                     obj.centre=centre;
                     obj.radius=10;
-                    obj.color=rand(1,3);
                     obj.significance=rand(1);
+                    obj.color=C(ceil(obj.significance*128),:);
                 otherwise
                     disp('Parameter error!'); return;
             end

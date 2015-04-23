@@ -94,7 +94,7 @@ classdef Control
             w1=0.6;
             w2=0.4;
             max_beta1=sqrt((obj.area(2)-obj.area(1))^2 + (obj.area(4)-obj.area(3))^2);
-            target_angle=atand((MyObject.centre(2)-Attacker.centre(2))/(MyObject.centre(1)-Attacker.centre(1)));
+            target_angle=My_atand((MyObject.centre(2)-Attacker.centre(2)), (MyObject.centre(1)-Attacker.centre(1)));
             target_velocity(1)=Attacker.speed*cosd(target_angle);
             target_velocity(2)=Attacker.speed*sind(target_angle);
             alpha1=(Attacker.velocity(1)*target_velocity(1)+Attacker.velocity(2)*target_velocity(2))/sqrt(target_velocity(1)^2 + target_velocity(2)^2);
@@ -132,7 +132,7 @@ classdef Control
             obj.index_object=[obj.index_object, value];
         end
         
-        function obj = BG_Assign(obj, time)
+        function obj = BG_Assign(obj, Attacker, Object, time)
             if isempty(obj.efficiency_martrix)
                 obj.assign_result=[];
                 obj.sum_result=[];
@@ -177,7 +177,7 @@ classdef Control
                 Ut=obj.efficiency_martrix(Ut_index, i);
                 comparison=(max(Ut)-Ut)./Ut;
                 for j=1:length(comparison)
-                    if comparison(j)>MySigmoid(150, 32, time)
+                    if comparison(j)>MySigmoid(150, 16, time)
                         obj.assign_result(Ut_index(j))=0;
                     end
                 end
