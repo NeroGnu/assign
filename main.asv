@@ -55,14 +55,15 @@ for j=1:1200
                        car(i).t_direction=atand((target(ib).centre(2)-car(i).centre(2))/(target(ib).centre(1)-car(i).centre(1)));
                     end
                 else
-                    car(i).t_direction=car(i).direction;
+                    car(i).t_direction=C.PatrolPoint(car(i));
 %                     fprintf('car(%d).t_direction:%f', i, car(i).t_direction);
 %                     fprintf('\n');
                 end 
             else
-                car(i).t_direction=car(i).direction;
+                car(i).t_direction=C.PatrolPoint(car(i));
 %                 fprintf('none car(%d).t_direction:%f', i, car(i).t_direction);
 %                 fprintf('\n');
+                end
             end
             car(i)=car(i).Run(0.1);
         end

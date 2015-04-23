@@ -171,12 +171,15 @@ classdef Control
                 end
             end
             
+            %Threshold check.
             for i=1:length(obj.assign_result(1,:))
                 Ut_index=find(obj.assign_result(:,i)==1);
                 Ut=obj.efficiency_martrix(Ut_index, i);
                 comparison=(max(Ut)-Ut)./Ut;
                 for j=1:length(comparison)
-                    
+                    if comparison(j)>MySigmoid(150, 32, time)
+                        obj.assign_result(Ut_index(j))=0;
+                    end
                 end
             end
 
@@ -184,9 +187,9 @@ classdef Control
             obj.sum_result = sum(sum(ematrix_b));
         end
         
-        function threshold=sigmoid(median, divider, x)
-            threshold=1/(exp((median-x)/divider) + 1);
-        end
+%         function threshold=MySigmoid(median, divider, x)
+%             threshold=1/(exp((median-x)/divider) + 1);
+%         end
         
 %         function angle=Patrol(obj, Attacker)
 %             temp=1;
