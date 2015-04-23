@@ -49,9 +49,9 @@ for j=1:1200
     end
     %分配
     C=C.BG_Assign(car, target, j*0.1);
-    %排除已完成小�?
-    parfor i=1:numAttacker
-        %排除已完成小�?
+    %排除已完成小�?
+    for i=1:numAttacker
+        %排除已完成小�?
         if 1~=car(i).finish
             if ~isempty(C.assign_result)
                 ia=find(C.assign_result(find(C.index_attacker==i),:)==1);

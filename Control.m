@@ -78,10 +78,11 @@ classdef Control
                     obj.efficiency_martrix(i, j)=obj.ComputeEfficiency(Attacker(obj.index_attacker(i)), Object(obj.index_object(j)));
                 end
             end
-        end
+        end 
         
         function bool=See(obj, Attacker, Object)
-            AO_vector=[Object.centre(1)-Attacker.centre(1), Object.centre(1)-Attacker.centre(1)];
+            AO_vector(1)=Object.centre(1)-Attacker.centre(1);
+            AO_vector(2)=Object.centre(2)-Attacker.centre(2);
             vector_angle=atand((Object.centre(2)-Attacker.centre(2))/(Object.centre(1)-Attacker.centre(1)));
             if abs(vector_angle-Attacker.direction)<=obj.vision_angle/2 && sqrt(AO_vector(1)^2 + AO_vector(2)^2)<=obj.vision_disdance
                 bool=1;
@@ -179,6 +180,16 @@ classdef Control
                 for j=1:length(comparison)
                     if comparison(j)>MySigmoid(150, 16, time)
                         obj.assign_result(Ut_index(j))=0;
+                    end
+                end
+            end
+            
+            for i=1:length(obj.index_attacker)
+                if sum(obj.assign_result(i,:))>0
+                    if 0==obj.See(Attacker(obj.index_attacker(i)), Object(obj.index_object(obj.assign_result(i,:)==1)))
+                        if sqrt((Object(obj.index_object(obj.assign_result(i,:)==1)).centre(2)-Attacker(obj.index_attacker(i)).centre(2))^2 + (Object(obj.index_object(obj.assign_result(i,:)==1)).centre(1)-Attacker(obj.index_attacker(i)).centre(1))^2)>Attacker(obj.index_attacker(i)).speed*time
+                            obj.assign_result(i,obj.assign_result(i,:)==1)=0;
+                        end
                     end
                 end
             end
