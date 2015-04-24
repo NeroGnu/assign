@@ -198,6 +198,45 @@ classdef Control
             obj.sum_result = sum(sum(ematrix_b));
         end
         
+        function obj=Normal_Assign(obj)
+            if isempty(obj.efficiency_martrix)
+                obj.assign_result=[];
+                obj.sum_result=[];
+                return;
+            end
+            ematrix=obj.efficiency_martrix;
+            ematrix_b = ematrix;
+            [numRows, numCols] = size(ematrix);
+            obj.assign_result = zeros(numRows, numCols);
+            anti_assign_result = ones(numRows, numCols);
+            round = fix(numRows/numCols);
+
+            for j = 1:round
+                for i = (j*numCols):((j + 1)*numCols)
+                    if 0 ~= max(max(ematrix))
+                        [index_i, index_j] = find(ematrix == max(max(ematrix)));
+                        obj.assign_result(index_i, index_j) = 1;
+                        anti_assign_result(index_i, :) = 0;
+                        ematrix(index_i, :) = 0;
+                        ematrix(:, index_j) = 0;
+                    end
+                end
+                ematrix = ematrix_b;
+                ematrix = anti_assign_result .* ematrix;
+            end
+
+            round = mod(numRows, numCols);
+
+            for i = 1:round
+                if 0 ~= max(max(ematrix))
+                    [index_i, index_j] = find(ematrix == max(max(ematrix)));
+                    obj.assign_result(index_i, index_j) = 1;
+                    anti_assign_result(index_i, :) = 0;
+                    ematrix(index_i, :) = 0;
+                    ematrix(:, index_j) = 0;
+                end
+            end
+        end
 %         function threshold=MySigmoid(median, divider, x)
 %             threshold=1/(exp((median-x)/divider) + 1);
 %         end
