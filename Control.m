@@ -56,22 +56,68 @@ classdef Control
             obj.index_attacker=[];
             obj.index_object=[];
             obj.efficiency_martrix=[];
+            
+%             One Object expend multiple Attacker.            
+%             for j=1:numObject
+%                 if 1~=obj. O_finish(j)
+%                     for i=1:numAttacker
+%                         if  1~=Attacker(i).finish
+%                             if sqrt((Object(j).centre(2)-Attacker(i).centre(2))^2 + (Object(j).centre(1)-Attacker(i).centre(1))^2)<Object(j).radius
+%                                obj. A_finish(i)=1;
+%                                obj. O_finish(j)=1;
+%                             end
+%                         end
+%                     end
+%                 end
+%             end
+
+%             One Attacker destroy multiple Object.
+            for i=1:numAttacker
+                if 1~=Attacker(i).finish
+                    for j=1:numObject
+                        if 1~=obj. O_finish(j)
+                            if sqrt((Object(j).centre(2)-Attacker(i).centre(2))^2 + (Object(j).centre(1)-Attacker(i).centre(1))^2)<Object(j).radius
+                               obj. A_finish(i)=1;
+                               obj. O_finish(j)=1;
+                            end
+                        end
+                    end
+                end
+            end
+            
             for i=1:numAttacker
                 if 1~=Attacker(i).finish
                     obj.index_attacker=i;
                     for j=1:numObject
                         if 1~=obj. O_finish(j)
                             if 1==obj.See(Attacker(i), Object(j))
-                                obj.index_object=j;
-                                if sqrt((Object(j).centre(2)-Attacker(i).centre(2))^2 + (Object(j).centre(1)-Attacker(i).centre(1))^2)<Object(j).radius
-                                   obj. A_finish(i)=1;
-                                   obj. O_finish(j)=1;
-                                end
+                                obj.index_object=j; 
                             end
                         end
                     end
                 end
             end
+            
+            
+            
+%             for i=1:numAttacker
+%                 if 1~=Attacker(i).finish
+%                     obj.index_attacker=i;
+%                     for j=1:numObject
+%                         if 1~=obj. O_finish(j)
+%                             if sqrt((Object(j).centre(2)-Attacker(i).centre(2))^2 + (Object(j).centre(1)-Attacker(i).centre(1))^2)<Object(j).radius
+%                                obj. A_finish(i)=1;
+%                                obj. O_finish(j)=1;
+%                             else
+%                                 if 1==obj.See(Attacker(i), Object(j))
+%                                     obj.index_object=j; 
+%                                 end
+%                             end
+%                         end
+%                     end
+%                 end
+%             end
+            
             obj.efficiency_martrix=zeros(length(obj.index_attacker), length(obj.index_object));
             for i=1:length(obj.index_attacker)
                 for j=1:length(obj.index_object)
@@ -178,7 +224,7 @@ classdef Control
                 Ut=obj.efficiency_martrix(Ut_index, i);
                 comparison=(max(Ut)-Ut)./Ut;
                 for j=1:length(comparison)
-                    if comparison(j)>MySigmoid(150, 16, time)
+                    if comparison(j)>MySigmoid(150, 8, time)
                         obj.assign_result(Ut_index(j))=0;
                     end
                 end

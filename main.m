@@ -42,13 +42,14 @@ for i=1:numTarget
 end
 C=Control(area, car, target, 120);
 
+j=1;
 while ~isover(C, car, target)
     %Scan
     C=C.Scaning(car, target);
-    parfor ii=1:length(car)
+    for ii=1:length(car)
         car(ii).finish=C.A_finish(ii);
     end
-    parfor ii=1:length(target)
+    for ii=1:length(target)
         target(ii).finish=C.O_finish(ii);
     end
     %Assign
@@ -58,10 +59,9 @@ while ~isover(C, car, target)
         %Exclude the finished car
         if 1~=car(i).finish
             if ~isempty(C.assign_result)
-                ia=find(C.assign_result(find(C.index_attacker==i),:)==1);
-                ib=C.index_object(ia);
-                if ~isempty(ib)
-                    car(i).t_direction=My_atand((target(ib).centre(2)-car(i).centre(2)), (target(ib).centre(1)-car(i).centre(1)));
+                itemp=C.index_object(C.assign_result(C.index_attacker==i,:)==1);
+                if ~isempty(itemp)
+                    car(i).t_direction=My_atand((target(itemp).centre(2)-car(i).centre(2)), (target(itemp).centre(1)-car(i).centre(1)));
                 else
                     car(i).t_direction=car(i).direction;
                 end 
@@ -72,6 +72,7 @@ while ~isover(C, car, target)
         end
     end
     pause(0.01);
+    j=j+1;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -95,13 +96,14 @@ for i=1:numTarget
 end
 C=Control(area, car, target, 120);
 
+j=1;
 while ~isover(C, car, target)
     %Scan
     C=C.Scaning(car, target);
-    parfor ii=1:length(car)
+    for ii=1:length(car)
         car(ii).finish=C.A_finish(ii);
     end
-    parfor ii=1:length(target)
+    for ii=1:length(target)
         target(ii).finish=C.O_finish(ii);
     end
     %Assign
@@ -111,10 +113,9 @@ while ~isover(C, car, target)
         %Exclude the finished car
         if 1~=car(i).finish
             if ~isempty(C.assign_result)
-                ia=find(C.assign_result(find(C.index_attacker==i),:)==1);
-                ib=C.index_object(ia);
-                if ~isempty(ib)
-                    car(i).t_direction=My_atand((target(ib).centre(2)-car(i).centre(2)), (target(ib).centre(1)-car(i).centre(1)));
+                itemp=C.index_object(C.assign_result(C.index_attacker==i,:)==1);
+                if ~isempty(itemp)
+                    car(i).t_direction=My_atand((target(itemp).centre(2)-car(i).centre(2)), (target(itemp).centre(1)-car(i).centre(1)));
                 else
                     car(i).t_direction=car(i).direction;
                 end 
@@ -125,5 +126,6 @@ while ~isover(C, car, target)
         end
     end
     pause(0.01);
+    j=j+1;
 end
 % end

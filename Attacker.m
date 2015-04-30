@@ -86,10 +86,10 @@ classdef Attacker
             [obj.shape_x, obj.shape_y]=RotatePatch(obj.shape_x, obj.shape_y, obj.direction-90);
             obj.ghandle=patch(obj.centre(1)+obj.shape_x, obj.centre(2)+obj.shape_y, obj.color);
         end
-        function obj=set.ghandle(obj, value)
-            delete(obj.ghandle);
-            obj.ghandle=value;
-        end
+%         function obj=set.ghandle(obj, value)
+%             delete(obj.ghandle);
+%             obj.ghandle=value;
+%         end
         function obj=Run(obj, t)
             if 1~=obj.finish
                 %转向
@@ -133,7 +133,8 @@ classdef Attacker
                obj.centre(1)=obj.centre(1)+obj.velocity(1)*t;
                obj.centre(2)=obj.centre(2)+obj.velocity(2)*t;
                %绘图
-               obj.ghandle=patch(obj.centre(1)+obj.shape_x, obj.centre(2)+obj.shape_y, obj.color);
+%                obj.ghandle=patch(obj.centre(1)+obj.shape_x, obj.centre(2)+obj.shape_y, obj.color);
+               set(obj.ghandle, 'XData', obj.centre(1)+obj.shape_x, 'YData', obj.centre(2)+obj.shape_y);
             end
         end
         function [rx, ry] = RotatePatch(x, y, angle)
